@@ -1,6 +1,6 @@
 <?php
 
-namespace HexMakina
+namespace HexMakina\Debugger
 {
   trait Debugger
   {
@@ -130,16 +130,16 @@ namespace HexMakina
 namespace
 {
   if(!function_exists('vd')) {
-	  function vd($var, $var_name=null){	return \HexMakina\Debugger::vd($var, $var_name, false);}
+	  function vd($var, $var_name=null){	return \HexMakina\Debugger\Debugger::vd($var, $var_name, false);}
   }
   if(!function_exists('dd')) {
-	  function dd($var, $var_name=null){	return \HexMakina\Debugger::dd($var, $var_name, false);}
+	  function dd($var, $var_name=null){	return \HexMakina\Debugge\Debugger::dd($var, $var_name, false);}
 	}
   if(!function_exists('vdt')) {
-	  function vdt($var, $var_name=null){	return \HexMakina\Debugger::vd($var, $var_name, true);}
+	  function vdt($var, $var_name=null){	return \HexMakina\Debugger\Debugger::vd($var, $var_name, true);}
 	}
   if(!function_exists('ddt')) {
-	  function ddt($var, $var_name=null){	return \HexMakina\Debugger::dd($var, $var_name, true);}
+	  function ddt($var, $var_name=null){	return \HexMakina\Debugger\Debugger::dd($var, $var_name, true);}
 	}
 }
 ?>
