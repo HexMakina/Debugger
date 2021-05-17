@@ -133,7 +133,7 @@ namespace
 	  function vd($var, $var_name=null){	return \HexMakina\Debugger\Debugger::vd($var, $var_name, false);}
   }
   if(!function_exists('dd')) {
-	  function dd($var, $var_name=null){	return \HexMakina\Debugge\Debugger::dd($var, $var_name, false);}
+	  function dd($var, $var_name=null){	return \HexMakina\Debugger\Debugger::dd($var, $var_name, false);}
 	}
   if(!function_exists('vdt')) {
 	  function vdt($var, $var_name=null){	return \HexMakina\Debugger\Debugger::vd($var, $var_name, true);}
