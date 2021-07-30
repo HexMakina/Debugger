@@ -39,8 +39,6 @@ namespace HexMakina\Debugger
     // ----------------------------------------------------------- dump on variable type (Throwables, array, anything else)
     public static function dump($var, $var_name = null, $full_backtrace = true)
     {
-      $short_file_path_length = 5;
-
       if(is_object($var) && (is_subclass_of($var, 'Error') || is_subclass_of($var, 'Exception')))
       {
         $backtrace = $var->getTrace();
@@ -142,4 +140,3 @@ namespace
 	  function ddt($var, $var_name=null){	return \HexMakina\Debugger\Debugger::dd($var, $var_name, true);}
 	}
 }
-?>
