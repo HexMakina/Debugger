@@ -35,7 +35,6 @@ namespace HexMakina\Debugger
       die;
     }
 
-
     // ----------------------------------------------------------- dump on variable type (Throwables, array, anything else)
     public static function dump($var, $var_name = null, $full_backtrace = true)
     {
@@ -79,13 +78,12 @@ namespace HexMakina\Debugger
       foreach($traces as $depth => $trace)
       {
         $function_name = $trace['function'] ?? '?';
-
         $class_name = $trace['class'] ?? '?';
 
-        if(($function_name === 'dump' || $function_name === 'vd' || $function_name === 'dd') && $class_name === __CLASS__)
+        if(self::is_debugger_function($class_name, $function_name))
           continue;
 
-        if($function_name !== 'vd' && $function_name !== 'dd' && $function_name !== 'vdt' && $function_name !== 'ddt' && isset($trace['args']))
+        if(!self::is_debugger_call($function_name) && isset($trace['args']))
         {
           $args = [];
           foreach($trace['args'] as $arg)
@@ -111,7 +109,7 @@ namespace HexMakina\Debugger
         else
           $args = microtime(true);
 
-        $call_file = isset($trace['file']) ? pathinfo($trace['file'], PATHINFO_BASENAME) : '?';
+        $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
         $call_line = $trace['line'] ?? '?';
 
         $formated_traces []= sprintf('[%-23.23s %3s] %'.($depth*3).'s%s%s(%s)', $call_file, $call_line,' ', "$class_name::", $function_name, $args);
@@ -121,6 +119,16 @@ namespace HexMakina\Debugger
       }
 
       return implode(PHP_EOL, array_reverse($formated_traces));
+    }
+
+    private static function is_debugger_function($class_name, $function_name)
+    {
+      return $class_name === __CLASS__ && in_array($function_name, ['dump', 'vd', 'dd']);
+    }
+
+    private static function is_debugger_call($function_name)
+    {
+      return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
     }
   }
 }
