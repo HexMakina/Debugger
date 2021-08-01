@@ -44,14 +44,14 @@ namespace HexMakina\Debugger
         $full_backtrace = true;
         $var_dump  = self::format_throwable_message(get_class($var), $var->getCode(), $var->getFile(), $var->getLine(), $var->getMessage());
       }
-    	else
-    	{
+      else
+      {
         $backtrace = debug_backtrace();
 
-    		ob_start();
-    		var_dump($var);
-    		$var_dump = ob_get_clean();
-    	}
+        ob_start();
+        var_dump($var);
+        $var_dump = ob_get_clean();
+      }
 
       return PHP_EOL."*******".(empty($var_name) ? '' : " ($var_name) ")."*******".PHP_EOL.self::format_trace($backtrace, $full_backtrace).PHP_EOL.$var_dump;
     }
@@ -84,28 +84,7 @@ namespace HexMakina\Debugger
           continue;
 
         if(!self::is_debugger_call($function_name) && isset($trace['args']))
-        {
-          $args = [];
-          foreach($trace['args'] as $arg)
-          {
-            if(is_null($arg))
-              $args[]= 'null';
-            elseif(is_bool($arg))
-              $args[]= $arg === true ? 'bool:true' : 'bool:false';
-            elseif(is_string($arg) || is_numeric($arg))
-              $args[]= $arg;
-            elseif(is_object($arg))
-              $args[]= get_class($arg);
-            elseif(is_array($arg))
-              $args[]= 'Array #'.count($arg);
-            else
-            {
-              var_dump($arg);
-              $args[] = '!!OTHER!!';
-            }
-          }
-          $args = implode(', ', $args);
-        }
+          $args = self::trace_args_to_string($trace['args'])
         else
           $args = microtime(true);
 
@@ -119,6 +98,31 @@ namespace HexMakina\Debugger
       }
 
       return implode(PHP_EOL, array_reverse($formated_traces));
+    }
+
+    private static function trace_args_to_string($trace_args)
+    {
+      $ret = [];
+      foreach($trace_args as $arg)
+      {
+        if(is_null($arg))
+          $ret[]= 'null';
+        elseif(is_bool($arg))
+          $ret[]= $arg === true ? 'bool:true' : 'bool:false';
+        elseif(is_string($arg) || is_numeric($arg))
+          $ret[]= $arg;
+        elseif(is_object($arg))
+          $ret[]= get_class($arg);
+        elseif(is_array($arg))
+          $ret[]= 'Array #'.count($arg);
+        else
+        {
+          var_dump($arg);
+          $ret[] = '!!OTHER!!';
+        }
+      }
+      $ret = implode(', ', $ret);
+      return $ret;
     }
 
     private static function is_debugger_function($class_name, $function_name)
@@ -136,15 +140,15 @@ namespace HexMakina\Debugger
 namespace
 {
   if(!function_exists('vd')) {
-	  function vd($var, $var_name=null){	return \HexMakina\Debugger\Debugger::vd($var, $var_name, false);}
+    function vd($var, $var_name=null){  return \HexMakina\Debugger\Debugger::vd($var, $var_name, false);}
   }
   if(!function_exists('dd')) {
-	  function dd($var, $var_name=null){	return \HexMakina\Debugger\Debugger::dd($var, $var_name, false);}
-	}
+    function dd($var, $var_name=null){  return \HexMakina\Debugger\Debugger::dd($var, $var_name, false);}
+  }
   if(!function_exists('vdt')) {
-	  function vdt($var, $var_name=null){	return \HexMakina\Debugger\Debugger::vd($var, $var_name, true);}
-	}
+    function vdt($var, $var_name=null){  return \HexMakina\Debugger\Debugger::vd($var, $var_name, true);}
+  }
   if(!function_exists('ddt')) {
-	  function ddt($var, $var_name=null){	return \HexMakina\Debugger\Debugger::dd($var, $var_name, true);}
-	}
+    function ddt($var, $var_name=null){  return \HexMakina\Debugger\Debugger::dd($var, $var_name, true);}
+  }
 }
