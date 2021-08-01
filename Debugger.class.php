@@ -84,7 +84,7 @@ namespace HexMakina\Debugger
           continue;
 
         if(!self::is_debugger_call($function_name) && isset($trace['args']))
-          $args = self::trace_args_to_string($trace['args'])
+          $args = self::trace_args_to_string($trace['args']);
         else
           $args = microtime(true);
 
