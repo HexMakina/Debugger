@@ -105,45 +105,18 @@ namespace HexMakina\Debugger
       $ret = [];
       foreach($trace_args as $arg)
       {
-        $arg_type = gettype($arg);
-        switch($arg_type)
-        {
-          case 'resource':
-          case 'resource (closed)':
-          case 'NULL':
-          case 'unknown type':
-            $ret[] = $arg_type;
-            break;
-          case 'boolean':
-            $ret[] = $arg_type.':'.($arg === true ? 'true' : 'false');
-            break;
-          case 'integer':
-          case 'double':
-          case 'string':
-            $ret[]= $arg;
-            break;
-          case 'array':
-            $ret[]= 'Array #'.count($arg);
-            break;
-          case 'object':
-            $ret[]= get_class($arg);
-            break;
-        }
-        // if(is_null($arg))
-        //   $ret[]= 'null';
-        // elseif(is_bool($arg))
-        //   $ret[]= $arg === true ? 'bool:true' : 'bool:false';
-        // elseif(is_string($arg) || is_numeric($arg))
-        //   $ret[]= $arg;
-        // elseif(is_object($arg))
-        //   $ret[]= get_class($arg);
-        // elseif(is_array($arg))
-        //   $ret[]= 'Array #'.count($arg);
-        // else
-        // {
-        //   var_dump($arg);
-        //   $ret[] = '!!OTHER!!';
-        // }
+        if(is_null($arg))
+          $ret[]= 'null';
+        elseif(is_bool($arg))
+          $ret[]= $arg === true ? 'bool:true' : 'bool:false';
+        elseif(is_string($arg) || is_numeric($arg))
+          $ret[]= $arg;
+        elseif(is_object($arg))
+          $ret[]= get_class($arg);
+        elseif(is_array($arg))
+          $ret[]= 'Array #'.count($arg);
+        else
+          $ret[] = 'unknown type';
       }
       $ret = implode(', ', $ret);
       return $ret;
