@@ -53,4 +53,4 @@ If we went deeper into the code, the output of ```vdt($foo);``` in a sub-sub-sub
 [Crudites.class.php       31]       ?::vdt(1627942013.3913)
 string(4) "test"
 ```
-Easy debugging & nice formatting, that Debugger for you.
+Easy debugging & nice formatting, that's Debugger for you.
