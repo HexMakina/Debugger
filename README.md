@@ -35,9 +35,10 @@ but ```vdt($foo);``` would be:
 [bootstrap.php            16]       ?::vdt(1627941924.2403)
 string(4) "test"
 ```
+We now see the whole path the program took before reaching the debugging command
 
-If we go deeper into the code, the output of $foo in a sub-sub-sub-sub.. routine would output the following:
 
+If we went deeper into the code, the output of ```vdt($foo);``` in a sub-sub-sub-sub-.. routine, would be the following:
 ```
 [index.php                 2]                            ?::require(/var/www/dev.engine/koral/lareponse/koral/bootstrap.php)
 [bootstrap.php            44]                         HexMakina\koral\Controllers\HomeController::bootstrap(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
@@ -49,3 +50,4 @@ If we go deeper into the code, the output of $foo in a sub-sub-sub-sub.. routine
 [Crudites.class.php       31]       ?::vdt(1627942013.3913)
 string(4) "test"
 ```
+Easy debugging & nice formatting, that Debugger for you.
