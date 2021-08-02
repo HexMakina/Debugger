@@ -5,10 +5,17 @@ wrapper for var_dump
 
 ## Usage
 Call Debugger::init(); to load the class.
-Class has 2 namespace, the debugger itself, and in the root namespace, 4 shortcuts:
+Debugger class file has 2 namespaces, the debugger itself in HexMakina\Debugger, and in the root namespace, 4 shortcuts:
 
-vd($var, $label); // var_dump
-dd($var, $label); // var_dump AND die
-vdt($var, $label); // var_dump with a stack trace
-ddt($var, $label); // var dump with a stack trace AND die
+```
+vd($var, $label); // nice var_dump
+dd($var, $label); // nice var_dump AND die
+vdt($var, $label); // nice var_dump with a stack trace
+ddt($var, $label); // nice var dump with a stack trace AND die
+```
 
+```
+**************
+[bootstrap.php            16]       ?::vd(1627941733.4195)
+string(4) "test"
+```
