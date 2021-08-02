@@ -106,10 +106,10 @@ namespace HexMakina\Debugger
       foreach($trace_args as $arg)
       {
         if(is_null($arg))
-          $ret[]= 'null';
+          $ret[]= 'NULL';
         elseif(is_bool($arg))
-          $ret[]= $arg === true ? 'bool:true' : 'bool:false';
-        elseif(is_string($arg) || is_numeric($arg))
+          $ret[]= 'bool:'.((int)$arg);
+        elseif(is_scalar($arg))
           $ret[]= $arg;
         elseif(is_object($arg))
           $ret[]= get_class($arg);
