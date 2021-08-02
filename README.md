@@ -22,10 +22,11 @@ string(4) "bar"
 ```
 
 and the output of ```vd($foo, 'a label for easy spotting');``` would be:
+```
 ******* (a label for easy spotting) *******
 [bootstrap.php            16]       ?::vd(1627942158.3575)
 string(3) "bar"
-
+```
 
 but ```vdt($foo);``` would be:
 ```
