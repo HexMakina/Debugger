@@ -14,9 +14,17 @@ vdt($var, $label); // nice var_dump with a stack trace
 ddt($var, $label); // nice var dump with a stack trace AND die
 ```
 
-For instance, in bootstrap.php, the output of ```vd('test'); ``` would be:
+For instance, in bootstrap.php, the output of ```vd('test');``` would be:
 ```
 **************
 [bootstrap.php            16]       ?::vd(1627941733.4195)
+string(4) "test"
+```
+
+but ```vd('test');``` would be:
+```
+**************
+[index.php                 2]          ?::require(/var/www/dev.engine/koral/lareponse/koral/bootstrap.php)
+[bootstrap.php            16]       ?::vdt(1627941924.2403)
 string(4) "test"
 ```
