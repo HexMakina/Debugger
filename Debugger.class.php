@@ -19,7 +19,7 @@ namespace HexMakina\Debugger
       $should_display = ini_get('display_errors') == '1';
 
       if($should_display && !empty($error_message))
-        echo('<pre style="z-index:9999; background-color:#FFF; color:#000; padding:0.5em; font-size:0.7em; margin:0 0 1em 0; font-family:courier;">'.$error_message.'</pre>');
+        echo('<pre style="text-align:left; z-index:9999; background-color:#FFF; color:#000; padding:0.5em; font-size:0.7em; margin:0 0 1em 0; font-family:courier;">'.$error_message.'</pre>');
     }
 
     // ----------------------------------------------------------- visual dump (depends on env)
