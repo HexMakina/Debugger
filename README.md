@@ -1,7 +1,10 @@
 # Debugger
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/HexMakina/Debugger/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/HexMakina/Debugger/?branch=main)
 
-wrapper for var_dump
+wrapper for var_dump, with an optional stack trace but mandatory nice looks
+tired of checking your source for var_dump() output? 
+wondering how that bug came into existence ?
+Debugger to the rescue
 
 ## Usage
 Call Debugger::init(); to load the class.
