@@ -4,7 +4,7 @@ namespace HexMakina\Debugger
 {
   trait Debugger
   {
-    public function __debugInfo()
+    public function __debugInfo() : array
     {
       return [json_encode(get_object_vars($this))];
     }
