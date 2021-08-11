@@ -90,7 +90,7 @@ namespace HexMakina\Debugger
                 $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
                 $call_line = $trace['line'] ?? '?';
 
-                $formated_traces []= sprintf('[%-23.23s %3s] %'.($depth*3).'s%s%s(%s)', $call_file, $call_line, ' ', "$class_name::", $function_name, $args);
+                $formated_traces []= sprintf('[%-23.23s %3s]  %s%s(%s)', $call_file, $call_line, "$class_name::", $function_name, $args);
 
                 if ($full_backtrace === false) {
                     break;
