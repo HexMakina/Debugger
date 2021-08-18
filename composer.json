@@ -3,7 +3,7 @@
     "description": "Debugger is a PHP wrapper class for var_dump() output",
     "type": "package",
     "require": {
-        "php": ">=7.3"
+        "php": ">=7.0"
     },
     "license": "mit",
     "authors": [
