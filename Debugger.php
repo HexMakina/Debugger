@@ -4,7 +4,7 @@ namespace HexMakina\Debugger
 {
     trait Debugger
     {
-        public function __debugInfo() : array
+        public function __debugInfo(): array
         {
             return [json_encode(get_object_vars($this))];
         }
@@ -19,7 +19,7 @@ namespace HexMakina\Debugger
             $should_display = ini_get('display_errors') == '1';
 
             if ($should_display && !empty($error_message)) {
-                echo('<pre style="text-align:left; z-index:9999; background-color:#FFF; color:#000; padding:0.5em; font-size:0.7em; margin:0 0 1em 0; font-family:courier;">'.$error_message.'</pre>');
+                echo('<pre style="text-align:left; z-index:9999; background-color:#FFF; color:#000; padding:0.5em; font-size:0.7em; margin:0 0 1em 0; font-family:courier;">' . $error_message . '</pre>');
             }
         }
 
@@ -51,7 +51,7 @@ namespace HexMakina\Debugger
                 $var_dump = ob_get_clean();
             }
 
-            return PHP_EOL."*******".(empty($var_name) ? '' : " ($var_name) ")."*******".PHP_EOL.self::format_trace($backtrace, $full_backtrace).PHP_EOL.$var_dump;
+            return PHP_EOL . "*******" . (empty($var_name) ? '' : " ($var_name) ") . "*******" . PHP_EOL . self::format_trace($backtrace, $full_backtrace) . PHP_EOL . $var_dump;
         }
 
       // -- formatting
@@ -59,7 +59,7 @@ namespace HexMakina\Debugger
       // -- formatting : first line of \Throwable-based error
         public static function format_throwable_message($class, $code, $file, $line, $message)
         {
-            return sprintf(PHP_EOL.'%s (%d) in file %s:%d'.PHP_EOL.'%s', $class, $code, self::format_file($file), $line, $message);
+            return sprintf(PHP_EOL . '%s (%d) in file %s:%d' . PHP_EOL . '%s', $class, $code, self::format_file($file), $line, $message);
         }
 
       // -- formatting : shorten file path to [self::REDUCE_FILE_PATH_DEPTH_TO] elements
@@ -90,7 +90,7 @@ namespace HexMakina\Debugger
                 $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
                 $call_line = $trace['line'] ?? '?';
 
-                $formated_traces []= sprintf('[%-23.23s %3s]  %s%s(%s)', $call_file, $call_line, "$class_name::", $function_name, $args);
+                $formated_traces [] = sprintf('[%-23.23s %3s]  %s%s(%s)', $call_file, $call_line, "$class_name::", $function_name, $args);
 
                 if ($full_backtrace === false) {
                     break;
@@ -105,15 +105,15 @@ namespace HexMakina\Debugger
             $ret = [];
             foreach ($trace_args as $arg) {
                 if (is_null($arg)) {
-                    $ret[]= 'NULL';
+                    $ret[] = 'NULL';
                 } elseif (is_bool($arg)) {
-                    $ret[]= 'bool:'.((int)$arg);
+                    $ret[] = 'bool:' . ((int)$arg);
                 } elseif (is_scalar($arg)) {
-                    $ret[]= $arg;
+                    $ret[] = $arg;
                 } elseif (is_object($arg)) {
-                    $ret[]= get_class($arg);
+                    $ret[] = get_class($arg);
                 } elseif (is_array($arg)) {
-                    $ret[]= 'Array #'.count($arg);
+                    $ret[] = 'Array #' . count($arg);
                 } else {
                     $ret[] = 'unknown type';
                 }
@@ -133,7 +133,6 @@ namespace HexMakina\Debugger
         }
     }
 }
-
 namespace
 {
     if (!function_exists('vd')) {
