@@ -10,11 +10,6 @@ namespace HexMakina\Debugger
             return [json_encode(get_object_vars($this))];
         }
 
-        public static function init()
-        {
-          // just to load the class, required to get the shortcuts defined in namespace \
-        }
-
         public static function displayErrors($error_message = null)
         {
             $should_display = ini_get('display_errors') == '1';
