@@ -2,7 +2,7 @@
 
 namespace HexMakina\Debugger
 {
-    trait Debugger
+    class Debugger
     {
 
         public function __debugInfo(): array
