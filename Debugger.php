@@ -4,6 +4,7 @@ namespace HexMakina\Debugger
 {
     trait Debugger
     {
+
         public function __debugInfo(): array
         {
             return [json_encode(get_object_vars($this))];
@@ -14,19 +15,19 @@ namespace HexMakina\Debugger
           // just to load the class, required to get the shortcuts defined in namespace \
         }
 
-        public static function display_errors($error_message = null)
+        public static function displayErrors($error_message = null)
         {
             $should_display = ini_get('display_errors') == '1';
 
             if ($should_display && !empty($error_message)) {
-                echo('<pre style="text-align:left; z-index:9999; background-color:#FFF; color:#000; padding:0.5em; font-size:0.7em; margin:0 0 1em 0; font-family:courier;">' . $error_message . '</pre>');
+                echo self::toHTML($error_message);
             }
         }
 
       // -- visual dump (depends on env)
         public static function vd($var, $var_name = null, $full_backtrace = false)
         {
-            self::display_errors(self::dump($var, $var_name, $full_backtrace));
+            self::displayErrors(self::dump($var, $var_name, $full_backtrace));
         }
 
       // -- visual dump and DIE
@@ -42,7 +43,7 @@ namespace HexMakina\Debugger
             if (is_object($var) && (is_subclass_of($var, 'Error') || is_subclass_of($var, 'Exception'))) {
                 $backtrace = $var->getTrace();
                 $full_backtrace = true;
-                $var_dump  = self::format_throwable_message(get_class($var), $var->getCode(), $var->getFile(), $var->getLine(), $var->getMessage());
+                $var_dump  = self::formatThrowable($var);
             } else {
                 $backtrace = debug_backtrace();
 
@@ -51,25 +52,38 @@ namespace HexMakina\Debugger
                 $var_dump = ob_get_clean();
             }
 
-            return PHP_EOL . "*******" . (empty($var_name) ? '' : " ($var_name) ") . "*******" . PHP_EOL . self::format_trace($backtrace, $full_backtrace) . PHP_EOL . $var_dump;
+            return PHP_EOL
+            . "*******"
+            . (empty($var_name) ? '' : " ($var_name) ")
+            . "*******"
+            . PHP_EOL
+            . self::tracesToString($backtrace, $full_backtrace)
+            . PHP_EOL
+            . $var_dump;
         }
 
       // -- formatting
 
       // -- formatting : first line of \Throwable-based error
-        public static function format_throwable_message($class, $code, $file, $line, $message)
+        public static function formatThrowable(\Throwable $err)
         {
-            return sprintf(PHP_EOL . '%s (%d) in file %s:%d' . PHP_EOL . '%s', $class, $code, self::format_file($file), $line, $message);
+            return PHP_EOL . sprintf(
+                '%s (%d) in file %s:%d' . PHP_EOL . '%s',
+                get_class($err),
+                $err->getCode(),
+                self::formatFilename($err->getFile()),
+                $err->getLine(),
+                $err->getMessage()
+            );
         }
 
-      // -- formatting : shorten file path to [self::REDUCE_FILE_PATH_DEPTH_TO] elements
-        public static function format_file($file, $reduce_file_depth_to = 5)
+        private static function formatFilename($file, $reduce_file_depth_to = 5)
         {
             return implode('/', array_slice(explode('/', $file), -$reduce_file_depth_to, $reduce_file_depth_to));
         }
 
       // -- formatting : nice backtrace
-        public static function format_trace($traces, $full_backtrace)
+        public static function tracesToString($traces, $full_backtrace)
         {
             $formated_traces = [];
 
@@ -77,12 +91,12 @@ namespace HexMakina\Debugger
                 $function_name = $trace['function'] ?? '?';
                 $class_name = $trace['class'] ?? '?';
 
-                if (self::is_debugger_function($class_name, $function_name)) {
+                if (self::isInternalFunctionCall($class_name, $function_name)) {
                     continue;
                 }
 
-                if (!self::is_debugger_call($function_name) && isset($trace['args'])) {
-                    $args = self::trace_args_to_string($trace['args']);
+                if (!self::isShortcutCall($function_name) && isset($trace['args'])) {
+                    $args = self::traceArgsToString($trace['args']);
                 } else {
                     $args = microtime(true);
                 }
@@ -90,7 +104,14 @@ namespace HexMakina\Debugger
                 $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
                 $call_line = $trace['line'] ?? '?';
 
-                $formated_traces [] = sprintf('[%-23.23s %3s]  %s%s(%s)', $call_file, $call_line, "$class_name::", $function_name, $args);
+                $formated_traces [] = sprintf(
+                    '[%-23.23s %3s]  %s%s(%s)',
+                    $call_file,
+                    $call_line,
+                    "$class_name::",
+                    $function_name,
+                    $args
+                );
 
                 if ($full_backtrace === false) {
                     break;
@@ -100,7 +121,7 @@ namespace HexMakina\Debugger
             return implode(PHP_EOL, array_reverse($formated_traces));
         }
 
-        private static function trace_args_to_string($trace_args)
+        private static function traceArgsToString($trace_args)
         {
             $ret = [];
             foreach ($trace_args as $arg) {
@@ -122,14 +143,30 @@ namespace HexMakina\Debugger
             return $ret;
         }
 
-        private static function is_debugger_function($class_name, $function_name)
+        private static function isInternalFunctionCall($class_name, $function_name): bool
         {
             return $class_name === __CLASS__ && in_array($function_name, ['dump', 'vd', 'dd']);
         }
 
-        private static function is_debugger_call($function_name)
+        private static function isShortcutCall($function_name): bool
         {
             return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
+        }
+
+        private static function toHTML($message)
+        {
+            $css = [
+            'text-align:left',
+            'z-index:9999',
+            'background-color:#FFF',
+            'color:#000',
+            'padding:0.5em',
+            'font-size:0.7em',
+            'margin:0 0 1em 0',
+            'font-family:courier'
+            ];
+
+            return sprintf('<pre style="%s">%s</pre>', implode(';', $css), $message);
         }
     }
 }
