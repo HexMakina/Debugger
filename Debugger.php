@@ -4,11 +4,6 @@ namespace HexMakina\Debugger
 {
     class Debugger
     {
-        // public function __debugInfo(): array
-        // {
-        //     return [json_encode(get_object_vars($this))];
-        // }
-
         public static function displayErrors($error_message = null)
         {
             $should_display = ini_get('display_errors') == '1';
@@ -18,20 +13,20 @@ namespace HexMakina\Debugger
             }
         }
 
-      // -- visual dump (depends on env)
+        // -- visual dump (depends on env)
         public static function vd($var, $var_name = null, $full_backtrace = false)
         {
             self::displayErrors(self::dump($var, $var_name, $full_backtrace));
         }
 
-      // -- visual dump and DIE
+        // -- visual dump and DIE
         public static function dd($var, $var_name = null, $full_backtrace = true)
         {
             self::vd($var, $var_name, $full_backtrace);
             die;
         }
 
-      // -- dump on variable type (Throwables, array, anything else)
+        // -- dump on variable type (Throwables, array, anything else)
         public static function dump($var, $var_name = null, $full_backtrace = true)
         {
             if (is_object($var) && (is_subclass_of($var, 'Error') || is_subclass_of($var, 'Exception'))) {
