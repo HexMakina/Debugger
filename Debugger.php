@@ -4,11 +4,10 @@ namespace HexMakina\Debugger
 {
     class Debugger
     {
-
-        public function __debugInfo(): array
-        {
-            return [json_encode(get_object_vars($this))];
-        }
+        // public function __debugInfo(): array
+        // {
+        //     return [json_encode(get_object_vars($this))];
+        // }
 
         public static function displayErrors($error_message = null)
         {
