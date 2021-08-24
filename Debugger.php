@@ -77,7 +77,7 @@ namespace HexMakina\Debugger
             );
         }
 
-        private static function formatFilename($file, $reduce_file_depth_to = 5)
+        public static function formatFilename($file, $reduce_file_depth_to = 5)
         {
             return implode('/', array_slice(explode('/', $file), -$reduce_file_depth_to, $reduce_file_depth_to));
         }
