@@ -17,6 +17,7 @@ namespace HexMakina\Debugger
         public static function vd($var, $var_name = null, $full_backtrace = false)
         {
             self::displayErrors(self::dump($var, $var_name, $full_backtrace));
+            return $var;
         }
 
         // -- visual dump and DIE
