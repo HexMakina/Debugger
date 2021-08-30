@@ -48,7 +48,7 @@ namespace HexMakina\Debugger
         // -- visual dump and DIE
         public static function visualDumpAndDie($var, $var_name = null, $full_backtrace = true)
         {
-            self::vd($var, $var_name, $full_backtrace);
+            self::visualDump($var, $var_name, $full_backtrace);
             die;
         }
 
@@ -178,7 +178,7 @@ namespace
     if (!function_exists('vdt')) {
         function vdt($var, $var_name = null)
         {
-            \HexMakina\Debugger\Debugger::visual_dump($var, $var_name, true);
+            \HexMakina\Debugger\Debugger::visualDump($var, $var_name, true);
         }
     }
     if (!function_exists('ddt')) {
