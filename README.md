@@ -9,7 +9,11 @@ wondering how that bug came into existence ?
 Debugger to the rescue
 
 ## Usage
-Call Debugger::init(); to load the class.
+Instantiate Debugger; to load the class
+```
+new \HexMakina\Debugger\Debugger();
+```
+
 Debugger class file has 2 namespaces, the debugger itself in HexMakina\Debugger, and in the root namespace, 4 shortcuts:
 
 ```
