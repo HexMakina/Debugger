@@ -13,20 +13,6 @@ namespace HexMakina\Debugger
             }
         }
 
-        // -- visual dump (depends on env)
-        public static function vd($var, $var_name = null, $full_backtrace = false)
-        {
-            self::displayErrors(self::dump($var, $var_name, $full_backtrace));
-            return $var;
-        }
-
-        // -- visual dump and DIE
-        public static function dd($var, $var_name = null, $full_backtrace = true)
-        {
-            self::vd($var, $var_name, $full_backtrace);
-            die;
-        }
-
         // -- dump on variable type (Throwables, array, anything else)
         public static function dump($var, $var_name = null, $full_backtrace = true)
         {
@@ -51,6 +37,21 @@ namespace HexMakina\Debugger
             . PHP_EOL
             . $var_dump;
         }
+
+        // -- visual dump (depends on env)
+        public static function visualDump($var, $var_name = null, $full_backtrace = false)
+        {
+            self::displayErrors(self::dump($var, $var_name, $full_backtrace));
+            return $var;
+        }
+
+        // -- visual dump and DIE
+        public static function visualDumpAndDie($var, $var_name = null, $full_backtrace = true)
+        {
+            self::vd($var, $var_name, $full_backtrace);
+            die;
+        }
+
 
       // -- formatting
 
@@ -165,25 +166,25 @@ namespace
     if (!function_exists('vd')) {
         function vd($var, $var_name = null)
         {
-            \HexMakina\Debugger\Debugger::vd($var, $var_name, false);
+            \HexMakina\Debugger\Debugger::visualDump($var, $var_name, false);
         }
     }
     if (!function_exists('dd')) {
         function dd($var, $var_name = null)
         {
-            \HexMakina\Debugger\Debugger::dd($var, $var_name, false);
+            \HexMakina\Debugger\Debugger::visualDumpAndDie($var, $var_name, false);
         }
     }
     if (!function_exists('vdt')) {
         function vdt($var, $var_name = null)
         {
-            \HexMakina\Debugger\Debugger::vd($var, $var_name, true);
+            \HexMakina\Debugger\Debugger::visual_dump($var, $var_name, true);
         }
     }
     if (!function_exists('ddt')) {
         function ddt($var, $var_name = null)
         {
-            \HexMakina\Debugger\Debugger::dd($var, $var_name, true);
+            \HexMakina\Debugger\Debugger::visualDumpAndDie($var, $var_name, true);
         }
     }
 }
