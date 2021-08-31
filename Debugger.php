@@ -4,13 +4,15 @@ namespace HexMakina\Debugger
 {
     class Debugger
     {
-        private static $meta_methods=[];
+        private static $meta_methods = [];
 
         public function __construct()
         {
             $debugger = new \ReflectionClass(__CLASS__);
             $methods = $debugger->getMethods();
-            self::$meta_methods = array_map(function($m){return $m->name;}, $methods);
+            self::$meta_methods = array_map(function ($m) {
+                return $m->name;
+            }, $methods);
         }
 
         public static function displayErrors($error_message = null)
