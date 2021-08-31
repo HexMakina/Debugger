@@ -4,6 +4,15 @@ namespace HexMakina\Debugger
 {
     class Debugger
     {
+        private static $meta_methods=[];
+
+        public function __construct()
+        {
+            $debugger = new \ReflectionClass(__CLASS__);
+            $methods = $debugger->getMethods();
+            self::$meta_methods = array_map(function($m){return $m->name;}, $methods);
+        }
+
         public static function displayErrors($error_message = null)
         {
             $should_display = ini_get('display_errors') == '1';
@@ -14,7 +23,7 @@ namespace HexMakina\Debugger
         }
 
         // -- dump on variable type (Throwables, array, anything else)
-        public static function dump($var, $var_name = null, $full_backtrace = true)
+        private static function dump($var, $var_name = null, $full_backtrace = true)
         {
             if (is_object($var) && (is_subclass_of($var, 'Error') || is_subclass_of($var, 'Exception'))) {
                 $backtrace = $var->getTrace();
@@ -80,17 +89,18 @@ namespace HexMakina\Debugger
 
             foreach ($traces as $depth => $trace) {
                 $function_name = $trace['function'] ?? '?';
-                $class_name = $trace['class'] ?? '?';
+                $class_name = $trace['class'] ?? '';
 
                 if (self::isInternalFunctionCall($class_name, $function_name)) {
                     continue;
                 }
 
-                if (!self::isShortcutCall($function_name) && isset($trace['args'])) {
-                    $args = self::traceArgsToString($trace['args']);
-                } else {
-                    $args = microtime(true);
-                }
+                $args = self::traceArgsToString($trace['args'] ?? []);
+                // if (!self::isShortcutCall($function_name) && isset($trace['args'])) {
+                //
+                // } else {
+                //     $args = microtime(true);
+                // }
 
                 $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
                 $call_line = $trace['line'] ?? '?';
@@ -136,7 +146,7 @@ namespace HexMakina\Debugger
 
         private static function isInternalFunctionCall($class_name, $function_name): bool
         {
-            return $class_name === __CLASS__ && in_array($function_name, ['dump', 'vd', 'dd']);
+            return $class_name === __CLASS__ && in_array($function_name, self::$meta_methods);
         }
 
         private static function isShortcutCall($function_name): bool
