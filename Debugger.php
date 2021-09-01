@@ -128,21 +128,26 @@ namespace HexMakina\Debugger
         {
             $ret = [];
             foreach ($trace_args as $arg) {
-                if (is_null($arg)) {
-                    $ret[] = 'NULL';
-                } elseif (is_bool($arg)) {
-                    $ret[] = 'bool:' . ((int)$arg);
-                } elseif (is_scalar($arg)) {
-                    $ret[] = $arg;
-                } elseif (is_object($arg)) {
-                    $ret[] = get_class($arg);
-                } elseif (is_array($arg)) {
-                    $ret[] = 'Array #' . count($arg);
-                } else {
-                    $ret[] = 'unknown type';
-                }
+                $ret[] = $this->traceArgToString($arg);
             }
-            $ret = implode(', ', $ret);
+            return implode(', ', $ret);
+        }
+
+        private static function traceArgToString($arg)
+        {
+            $ret = 'unknown type';
+
+            if (is_null($arg)) {
+                $ret = 'NULL';
+            } elseif (is_bool($arg)) {
+                $ret = 'bool:' . ((int)$arg);
+            } elseif (is_scalar($arg)) {
+                $ret = $arg;
+            } elseif (is_object($arg)) {
+                $ret = get_class($arg);
+            } elseif (is_array($arg)) {
+                $ret = 'Array #' . count($arg);
+            }
             return $ret;
         }
 
