@@ -156,10 +156,10 @@ namespace HexMakina\Debugger
             return $class_name === __CLASS__ && in_array($function_name, self::$meta_methods);
         }
 
-        private static function isShortcutCall($function_name): bool
-        {
-            return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
-        }
+        // private static function isShortcutCall($function_name): bool
+        // {
+        //     return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
+        // }
 
         private static function toHTML($message)
         {
