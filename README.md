@@ -1,5 +1,9 @@
 # Debugger
+[![Latest Stable Version](http://poser.pugx.org/hexmakina/debugger/v)](https://packagist.org/packages/hexmakina/debugger)
+[![License](http://poser.pugx.org/hexmakina/debugger/license)](https://packagist.org/packages/hexmakina/debugger)
+
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/HexMakina/Debugger/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/HexMakina/Debugger/?branch=main)
+<img src="https://img.shields.io/badge/PSR-4-brightgreen" alt="PSR-4 Compliant" />
 <img src="https://img.shields.io/badge/PSR-12-brightgreen" alt="PSR-12 Compliant" />
 <img src="https://img.shields.io/badge/PHP-7.0-brightgreen" alt="PHP 7.0 Required" />
 
@@ -59,4 +63,5 @@ If we went deeper into the code, the output of ```vdt($foo);``` in a sub-sub-sub
 [Crudites.class.php       31]       ?::vdt(1627942013.3913)
 string(4) "test"
 ```
+
 Easy debugging & nice formatting, that's Debugger for you.
