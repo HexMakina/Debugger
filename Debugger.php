@@ -128,7 +128,7 @@ namespace HexMakina\Debugger
         {
             $ret = [];
             foreach ($trace_args as $arg) {
-                $ret[] = $this->traceArgToString($arg);
+                $ret[] = self::traceArgToString($arg);
             }
             return implode(', ', $ret);
         }
