@@ -54,9 +54,9 @@ We now see the whole path the program took before reaching the debugging command
 If we went deeper into the code, the output of ```vdt($foo);``` in a sub-sub-sub-sub-.. routine, would be the following:
 ```
 [index.php                 2]                            ?::require(/var/www/dev.engine/koral/lareponse/koral/bootstrap.php)
-[bootstrap.php            44]                         HexMakina\koral\Controllers\HomeController::bootstrap(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
-[HomeController.class.ph  23]                      HexMakina\koral\Controllers\HomeController::common_viewport(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
-[HomeController.class.ph  34]                   HexMakina\Crudites\TightModel::filter()
+[bootstrap.php            44]                         HexMakina\koral\Controllers\Home::bootstrap(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
+[Home.class.ph  23]                      HexMakina\koral\Controllers\Home::common_viewport(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
+[Home.class.ph  34]                   HexMakina\Crudites\TightModel::filter()
 [TightModel.class.php    326]                HexMakina\kadro\Auth\Operator::query_retrieve(Array #0, Array #0)
 [Operator.class.php       71]             HexMakina\Crudites\TightModel::table()
 [TightModel.class.php    480]          HexMakina\Crudites\Crudites::inspect(kadro_operator)
