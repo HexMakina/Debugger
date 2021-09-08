@@ -90,30 +90,10 @@ namespace HexMakina\Debugger
             $formated_traces = [];
 
             foreach ($traces as $depth => $trace) {
-                $function_name = $trace['function'] ?? '?';
-                $class_name = $trace['class'] ?? '';
+                $trace_string = self::traceToString($trace);
 
-                if (self::isInternalFunctionCall($class_name, $function_name)) {
-                    continue;
-                }
-
-                if (!self::isShortcutCall($function_name) && isset($trace['args'])) {
-                    $args = self::traceArgsToString($trace['args']);
-                } else {
-                    $args = microtime(true);
-                }
-
-                $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
-                $call_line = $trace['line'] ?? '?';
-
-                $formated_traces [] = sprintf(
-                    '[%-23.23s %3s]  %s%s(%s)',
-                    $call_file,
-                    $call_line,
-                    "$class_name::",
-                    $function_name,
-                    $args
-                );
+                if(!empty($trace_string))
+                  $formated_traces []= $trace_string;
 
                 if ($full_backtrace === false) {
                     break;
@@ -123,6 +103,33 @@ namespace HexMakina\Debugger
             return implode(PHP_EOL, array_reverse($formated_traces));
         }
 
+        private static function traceToString($trace)
+        {
+            $function_name = $trace['function'] ?? '?';
+            $class_name = $trace['class'] ?? '';
+
+            if (self::isInternalFunctionCall($class_name, $function_name)) {
+                return '';
+            }
+
+            if (!self::isShortcutCall($function_name) && isset($trace['args'])) {
+                $args = self::traceArgsToString($trace['args']);
+            } else {
+                $args = microtime(true);
+            }
+
+            $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
+            $call_line = $trace['line'] ?? '?';
+
+            return sprintf(
+                '[%-23.23s %3s]  %s%s(%s)',
+                $call_file,
+                $call_line,
+                "$class_name::",
+                $function_name,
+                $args
+            );
+        }
         private static function traceArgsToString($trace_args)
         {
             $ret = [];
