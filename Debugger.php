@@ -90,8 +90,8 @@ namespace HexMakina\Debugger
             $formated_traces = [];
             
             foreach ($traces as $depth => $trace) {
-                if(!empty($trace_string = self::traceToString($trace))){
-                    $formated_traces []= $trace_string;
+                if (!empty($trace_string = self::traceToString($trace))) {
+                    $formated_traces [] = $trace_string;
                 }
 
                 if ($full_backtrace === false) {
@@ -185,7 +185,7 @@ namespace HexMakina\Debugger
 }
 namespace
 {
-    use \HexMakina\Debugger\Debugger;
+    use HexMakina\Debugger\Debugger;
 
     if (!function_exists('vd')) {
         function vd($var, $var_name = null)
