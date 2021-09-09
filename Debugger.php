@@ -88,12 +88,11 @@ namespace HexMakina\Debugger
         public static function tracesToString($traces, $full_backtrace)
         {
             $formated_traces = [];
-
+            
             foreach ($traces as $depth => $trace) {
-                $trace_string = self::traceToString($trace);
-
-                if(!empty($trace_string))
-                  $formated_traces []= $trace_string;
+                if(!empty($trace_string = self::traceToString($trace))){
+                    $formated_traces []= $trace_string;
+                }
 
                 if ($full_backtrace === false) {
                     break;
