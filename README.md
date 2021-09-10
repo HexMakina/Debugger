@@ -8,9 +8,12 @@
 <img src="https://img.shields.io/badge/PHP-7.0-brightgreen" alt="PHP 7.0 Required" />
 
 wrapper for var_dump, with an optional stack trace but mandatory nice looks
-tired of checking your source for var_dump() output? 
-wondering how that bug came into existence ?
-Debugger to the rescue
+- it tells you were the call was initiated so you don't ever have to look for a forgotten var_dump()
+- it shows you the trace of calls that lead to the dump()
+- for each trace, it presents you with the filename, the class name and the function with params
+
+no more wondering how a bug came into being.
+
 
 ## Usage
 Instantiate Debugger; to load the class
@@ -51,17 +54,19 @@ string(4) "test"
 We now see the whole path the program took before reaching the debugging command
 
 
-If we went deeper into the code, the output of ```vdt($foo);``` in a sub-sub-sub-sub-.. routine, would be the following:
+If we went deeper into the code, the output of ```vdt($foo, 'inspecting foo');``` in a sub-sub-sub-sub-.. routine, would be the following:
 ```
-[index.php                 2]                            ?::require(/var/www/dev.engine/koral/lareponse/koral/bootstrap.php)
-[bootstrap.php            44]                         HexMakina\koral\Controllers\Home::bootstrap(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
-[Home.class.ph  23]                      HexMakina\koral\Controllers\Home::common_viewport(HexMakina\kadro\Controllers\ReceptionController, HexMakina\kadro\Auth\Operator)
-[Home.class.ph  34]                   HexMakina\Crudites\TightModel::filter()
-[TightModel.class.php    326]                HexMakina\kadro\Auth\Operator::query_retrieve(Array #0, Array #0)
-[Operator.class.php       71]             HexMakina\Crudites\TightModel::table()
-[TightModel.class.php    480]          HexMakina\Crudites\Crudites::inspect(kadro_operator)
-[Crudites.class.php       31]       ?::vdt(1627942013.3913)
-string(4) "test"
+******* (inspecting) *******
+[index.php                35]  HexMakina\koral\Controllers\Home::bootstrap()
+[Home.php                 28]  App\Controllers\Home::common_viewport(HexMakina\kadro\Controllers\Reception)
+[Home.php                 18]  HexMakina\TightORM\TableModel::filter()
+[TableModel.php          184]  HexMakina\koral\Models\Worker::query_retrieve(Array #0, Array #0)
+[Worker.php               78]  HexMakina\TightORM\TightModel::query_retrieve(Array #0, Array #0)
+[TightModel.php          160]  HexMakina\TightORM\TightModelSelector::__construct(HexMakina\koral\Models\Worker)
+[TightModelSelector.php   20]  HexMakina\TightORM\TableModel::table()
+[TableModel.php           61]  HexMakina\Crudites\Crudites::inspect(worker)
+[Crudites.php             31]  ::vdt(1631261380.9958)
+string(6) "worker"
 ```
 
 Easy debugging & nice formatting, that's Debugger for you.
