@@ -15,61 +15,55 @@ namespace HexMakina\Debugger
             }, $methods);
         }
 
-        public static function displayErrors($error_message = null)
-        {
-            $should_display = ini_get('display_errors') == '1';
-
-            if ($should_display && !empty($error_message)) {
-                echo self::toHTML($error_message);
-            }
-        }
-
-        // -- dump on variable type (Throwables, array, anything else)
-        private static function dump($var, $var_name = null, $full_backtrace = true)
-        {
-            if (is_object($var) && (is_subclass_of($var, 'Error') || is_subclass_of($var, 'Exception'))) {
-                $backtrace = $var->getTrace();
-                $full_backtrace = true;
-                $var_dump  = self::formatThrowable($var);
-            } else {
-                $backtrace = debug_backtrace();
-
-                ob_start();
-                var_dump($var);
-                $var_dump = ob_get_clean();
-            }
-
-            return PHP_EOL
-            . "*******"
-            . (empty($var_name) ? '' : " ($var_name) ")
-            . "*******"
-            . PHP_EOL
-            . self::tracesToString($backtrace, $full_backtrace)
-            . PHP_EOL
-            . $var_dump;
-        }
-
-        // -- visual dump (depends on env)
+        // -- visual dump (display depends on env)
+        // return the var itself, for easy code debugging
         public static function visualDump($var, $var_name = null, $full_backtrace = false)
         {
-            self::displayErrors(self::dump($var, $var_name, $full_backtrace));
+            $dump = self::dump($var);
+            $backtrace = self::traces($var);
+            $message = self::toHTML($dump, $var_name, $backtrace, $full_backtrace);
+
+            self::displayErrors($message);
             return $var;
         }
 
-        // -- visual dump and DIE
-        public static function visualDumpAndDie($var, $var_name = null, $full_backtrace = true)
+        // should we display something ?
+        public static function displayErrors($error_message = null)
         {
-            self::visualDump($var, $var_name, $full_backtrace);
-            die;
+            if (!empty($error_message) && ini_get('display_errors') == '1') {
+                echo $error_message;
+            }
         }
 
+        // creates a dump according to variable type (Throwables & anything else)
+        private static function dump($var): string
+        {
+            if ($var instanceof \Throwable) {
+                return self::formatThrowable($var);
+            }
 
-      // -- formatting
+            ob_start();
+            var_dump($var);
+            return ob_get_clean();
+        }
 
-      // -- formatting : first line of \Throwable-based error
+        public static function traces($var)
+        {
+            $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
+
+            // removes all internal calls
+            while(!empty($traces[0]['class']) && $traces[0]['class'] == __CLASS__)
+              array_shift($traces);
+
+            return $traces;
+        }
+
+        // -- formatting
+
+        // -- formatting : first line of \Throwable-based error
         public static function formatThrowable(\Throwable $err)
         {
-            return PHP_EOL . sprintf(
+            return sprintf(
                 '%s (%d) in file %s:%d' . PHP_EOL . '%s',
                 get_class($err),
                 $err->getCode(),
@@ -79,22 +73,22 @@ namespace HexMakina\Debugger
             );
         }
 
+        // reduce_file_depth_to allows for short filepath, cause it gets crazy sometimes
         public static function formatFilename($file, $reduce_file_depth_to = 5)
         {
             return implode('/', array_slice(explode('/', $file), -$reduce_file_depth_to, $reduce_file_depth_to));
         }
 
-      // -- formatting : nice backtrace
+        // -- formatting : nice backtrace
         public static function tracesToString($traces, $full_backtrace)
         {
             $formated_traces = [];
-            
+
             foreach ($traces as $depth => $trace) {
                 if (!empty($trace_string = self::traceToString($trace))) {
                     $formated_traces [] = $trace_string;
                 }
-
-                if ($full_backtrace === false) {
+                if (!empty($formated_traces) && $full_backtrace === false) {
                     break;
                 }
             }
@@ -107,14 +101,10 @@ namespace HexMakina\Debugger
             $function_name = $trace['function'] ?? '?';
             $class_name = $trace['class'] ?? '';
 
-            if (self::isInternalFunctionCall($class_name, $function_name)) {
-                return '';
-            }
-
-            if (!self::isShortcutCall($function_name) && isset($trace['args'])) {
-                $args = self::traceArgsToString($trace['args']);
+            if (self::isShortcutCall($function_name)) {
+              $args = date_format(date_create(),'ymd:his');
             } else {
-                $args = microtime(true);
+              $args = self::traceArgsToString($trace['args'] ?? []);
             }
 
             $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
@@ -129,6 +119,7 @@ namespace HexMakina\Debugger
                 $args
             );
         }
+
         private static function traceArgsToString($trace_args)
         {
             $ret = [];
@@ -156,17 +147,30 @@ namespace HexMakina\Debugger
             return $ret;
         }
 
-        private static function isInternalFunctionCall($class_name, $function_name): bool
-        {
-            return $class_name === __CLASS__ && in_array($function_name, self::$meta_methods);
-        }
+        // private static function isInternalFunctionCall($class_name, $function_name): bool
+        // {
+        //     return $class_name === __CLASS__ && in_array($function_name, self::$meta_methods);
+        // }
 
         private static function isShortcutCall($function_name): bool
         {
             return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
         }
 
-        private static function toHTML($message)
+
+        public static function toText($var_dump, $var_name, $backtrace, $full_backtrace)
+        {
+            return PHP_EOL
+            . "******* "
+            . (empty($var_name) ? $backtrace[1]['function'].'()' : " ($var_name) ")
+            . " *******"
+            . PHP_EOL
+            . self::tracesToString($backtrace, $full_backtrace)
+            . PHP_EOL
+            . $var_dump;
+        }
+
+        public static function toHTML($var_dump, $var_name, $backtrace, $full_backtrace)
         {
             $css = [
             'text-align:left',
@@ -179,7 +183,11 @@ namespace HexMakina\Debugger
             'font-family:courier'
             ];
 
-            return sprintf('<pre style="%s">%s</pre>', implode(';', $css), $message);
+            return sprintf(
+                '<pre style="%s">%s</pre>',
+                implode(';', $css),
+                self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
+            );
         }
     }
 }
@@ -196,7 +204,8 @@ namespace
     if (!function_exists('dd')) {
         function dd($var, $var_name = null)
         {
-            Debugger::visualDumpAndDie($var, $var_name, false);
+            Debugger::visualDump($var, $var_name, false);
+            die;
         }
     }
     if (!function_exists('vdt')) {
@@ -208,7 +217,8 @@ namespace
     if (!function_exists('ddt')) {
         function ddt($var, $var_name = null)
         {
-            Debugger::visualDumpAndDie($var, $var_name, true);
+            Debugger::visualDump($var, $var_name, true);
+            die;
         }
     }
 }
