@@ -35,18 +35,6 @@ namespace HexMakina\Debugger
             }
         }
 
-        // creates a dump according to variable type (Throwables & anything else)
-        private static function dump($var): string
-        {
-            if ($var instanceof \Throwable) {
-                return self::formatThrowable($var);
-            }
-
-            ob_start();
-            var_dump($var);
-            return ob_get_clean();
-        }
-
         public static function traces($var)
         {
             $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
@@ -95,6 +83,50 @@ namespace HexMakina\Debugger
             }
 
             return implode(PHP_EOL, array_reverse($formated_traces));
+        }
+
+        public static function toText($var_dump, $var_name, $backtrace, $full_backtrace)
+        {
+          return PHP_EOL
+          . "******* "
+          . (empty($var_name) ? $backtrace[1]['function'] . '()' : " ($var_name) ")
+          . " *******"
+          . PHP_EOL
+          . self::tracesToString($backtrace, $full_backtrace)
+          . PHP_EOL
+          . $var_dump;
+        }
+
+        public static function toHTML($var_dump, $var_name, $backtrace, $full_backtrace)
+        {
+          $css = [
+            'text-align:left',
+            'z-index:9999',
+            'background-color:#FFF',
+            'color:#000',
+            'padding:0.5em',
+            'font-size:0.7em',
+            'margin:0 0 1em 0',
+            'font-family:courier'
+          ];
+
+          return sprintf(
+            '<pre style="%s">%s</pre>',
+            implode(';', $css),
+            self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
+          );
+        }
+
+        // creates a dump according to variable type (Throwables & anything else)
+        private static function dump($var): string
+        {
+            if ($var instanceof \Throwable) {
+                return self::formatThrowable($var);
+            }
+
+            ob_start();
+            var_dump($var);
+            return ob_get_clean();
         }
 
         private static function traceToString($trace)
@@ -158,38 +190,6 @@ namespace HexMakina\Debugger
             return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
         }
 
-
-        public static function toText($var_dump, $var_name, $backtrace, $full_backtrace)
-        {
-            return PHP_EOL
-            . "******* "
-            . (empty($var_name) ? $backtrace[1]['function'] . '()' : " ($var_name) ")
-            . " *******"
-            . PHP_EOL
-            . self::tracesToString($backtrace, $full_backtrace)
-            . PHP_EOL
-            . $var_dump;
-        }
-
-        public static function toHTML($var_dump, $var_name, $backtrace, $full_backtrace)
-        {
-            $css = [
-            'text-align:left',
-            'z-index:9999',
-            'background-color:#FFF',
-            'color:#000',
-            'padding:0.5em',
-            'font-size:0.7em',
-            'margin:0 0 1em 0',
-            'font-family:courier'
-            ];
-
-            return sprintf(
-                '<pre style="%s">%s</pre>',
-                implode(';', $css),
-                self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
-            );
-        }
     }
 }
 namespace
