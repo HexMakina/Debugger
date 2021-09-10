@@ -52,8 +52,9 @@ namespace HexMakina\Debugger
             $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
 
             // removes all internal calls
-            while(!empty($traces[0]['class']) && $traces[0]['class'] == __CLASS__)
-              array_shift($traces);
+            while (!empty($traces[0]['class']) && $traces[0]['class'] == __CLASS__) {
+                array_shift($traces);
+            }
 
             return $traces;
         }
@@ -102,9 +103,9 @@ namespace HexMakina\Debugger
             $class_name = $trace['class'] ?? '';
 
             if (self::isShortcutCall($function_name)) {
-              $args = date_format(date_create(),'ymd:his');
+                $args = date_format(date_create(), 'ymd:his');
             } else {
-              $args = self::traceArgsToString($trace['args'] ?? []);
+                $args = self::traceArgsToString($trace['args'] ?? []);
             }
 
             $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
@@ -162,7 +163,7 @@ namespace HexMakina\Debugger
         {
             return PHP_EOL
             . "******* "
-            . (empty($var_name) ? $backtrace[1]['function'].'()' : " ($var_name) ")
+            . (empty($var_name) ? $backtrace[1]['function'] . '()' : " ($var_name) ")
             . " *******"
             . PHP_EOL
             . self::tracesToString($backtrace, $full_backtrace)
