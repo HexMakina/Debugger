@@ -20,7 +20,7 @@ namespace HexMakina\Debugger
         {
             $dump = self::dump($var);
             $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
-            $traces = self::purgeTraces($traces, __CLASS__);
+            $traces = self::purgeTraces($traces);
 
             $message = self::toHTML($dump, $var_name, $traces, $full_backtrace);
 
