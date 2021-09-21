@@ -4,15 +4,13 @@ namespace HexMakina\Debugger
 {
     class Debugger
     {
-        private static $meta_methods = [];
+        private static $skip_classes = [__CLASS__];
 
-        public function __construct()
-        {
-            $debugger = new \ReflectionClass(__CLASS__);
-            $methods = $debugger->getMethods();
-            self::$meta_methods = array_map(function ($m) {
-                return $m->name;
-            }, $methods);
+        public function setSkipClasses($skip_classes){
+          foreach($skip_classes as $class){
+            array_push(self::$skip_classes, $class);
+          }
+          self::$skip_classes = array_unique(self::$skip_classes);
         }
 
         // -- visual dump (display depends on env)
@@ -20,8 +18,10 @@ namespace HexMakina\Debugger
         public static function visualDump($var, $var_name = null, $full_backtrace = false)
         {
             $dump = self::dump($var);
-            $backtrace = self::traces($var);
-            $message = self::toHTML($dump, $var_name, $backtrace, $full_backtrace);
+            $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
+            $traces = self::purgeTraces($traces, __CLASS__);
+
+            $message = self::toHTML($dump, $var_name, $traces, $full_backtrace);
 
             self::displayErrors($message);
             return $var;
@@ -35,56 +35,20 @@ namespace HexMakina\Debugger
             }
         }
 
-        public static function traces($var)
+        private static function purgeTraces($traces)
         {
-            $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
+          $purged = [];
+          // removes all internal calls
+          foreach($traces as $i => $trace){
+            if (empty($traces[$i]['class']) || !in_array($traces[$i]['class'], self::$skip_classes))
+              $purged[$i] = $trace;
 
-            // removes all internal calls
-            while (!empty($traces[0]['class']) && $traces[0]['class'] == __CLASS__) {
-                array_shift($traces);
-            }
+          }
 
-            return $traces;
+          return $purged;
         }
 
         // -- formatting
-
-        // -- formatting : first line of \Throwable-based error
-        public static function formatThrowable(\Throwable $err)
-        {
-            return sprintf(
-                '%s (%d) in file %s:%d' . PHP_EOL . '%s',
-                get_class($err),
-                $err->getCode(),
-                self::formatFilename($err->getFile()),
-                $err->getLine(),
-                $err->getMessage()
-            );
-        }
-
-        // reduce_file_depth_to allows for short filepath, cause it gets crazy sometimes
-        public static function formatFilename($file, $reduce_file_depth_to = 5)
-        {
-            return implode('/', array_slice(explode('/', $file), -$reduce_file_depth_to, $reduce_file_depth_to));
-        }
-
-        // -- formatting : nice backtrace
-        public static function tracesToString($traces, $full_backtrace)
-        {
-            $formated_traces = [];
-
-            foreach ($traces as $depth => $trace) {
-                if (!empty($trace_string = self::traceToString($trace))) {
-                    $formated_traces [] = $trace_string;
-                }
-                if (!empty($formated_traces) && $full_backtrace === false) {
-                    break;
-                }
-            }
-
-            return implode(PHP_EOL, array_reverse($formated_traces));
-        }
-
         public static function toText($var_dump, $var_name, $backtrace, $full_backtrace)
         {
           return PHP_EOL
@@ -115,6 +79,41 @@ namespace HexMakina\Debugger
             implode(';', $css),
             self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
           );
+        }
+        // -- formatting : first line of \Throwable-based error
+        public static function formatThrowable(\Throwable $err)
+        {
+            return sprintf(
+                '%s (%d) in file %s:%d' . PHP_EOL . '%s',
+                get_class($err),
+                $err->getCode(),
+                self::formatFilename($err->getFile()),
+                $err->getLine(),
+                $err->getMessage()
+            );
+        }
+
+        // reduce_file_depth_to allows for short filepath, cause it gets crazy sometimes
+        private static function formatFilename($file, $reduce_file_depth_to = 5)
+        {
+            return implode('/', array_slice(explode('/', $file), -$reduce_file_depth_to, $reduce_file_depth_to));
+        }
+
+        // -- formatting : nice backtrace
+        private static function tracesToString($traces, $full_backtrace)
+        {
+            $formated_traces = [];
+
+            foreach ($traces as $depth => $trace) {
+                if (!empty($trace_string = self::traceToString($trace))) {
+                    $formated_traces [] = $trace_string;
+                }
+                if (!empty($formated_traces) && $full_backtrace === false) {
+                    break;
+                }
+            }
+
+            return implode(PHP_EOL, array_reverse($formated_traces));
         }
 
         // creates a dump according to variable type (Throwables & anything else)
@@ -179,11 +178,6 @@ namespace HexMakina\Debugger
             }
             return $ret;
         }
-
-        // private static function isInternalFunctionCall($class_name, $function_name): bool
-        // {
-        //     return $class_name === __CLASS__ && in_array($function_name, self::$meta_methods);
-        // }
 
         private static function isShortcutCall($function_name): bool
         {
