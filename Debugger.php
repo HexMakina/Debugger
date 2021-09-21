@@ -6,11 +6,12 @@ namespace HexMakina\Debugger
     {
         private static $skip_classes = [__CLASS__];
 
-        public function setSkipClasses($skip_classes){
-          foreach($skip_classes as $class){
-            array_push(self::$skip_classes, $class);
-          }
-          self::$skip_classes = array_unique(self::$skip_classes);
+        public function setSkipClasses($skip_classes)
+        {
+            foreach ($skip_classes as $class) {
+                array_push(self::$skip_classes, $class);
+            }
+            self::$skip_classes = array_unique(self::$skip_classes);
         }
 
         // -- visual dump (display depends on env)
@@ -37,33 +38,33 @@ namespace HexMakina\Debugger
 
         private static function purgeTraces($traces)
         {
-          $purged = [];
+            $purged = [];
           // removes all internal calls
-          foreach($traces as $i => $trace){
-            if (empty($traces[$i]['class']) || !in_array($traces[$i]['class'], self::$skip_classes))
-              $purged[$i] = $trace;
+            foreach ($traces as $i => $trace) {
+                if (empty($traces[$i]['class']) || !in_array($traces[$i]['class'], self::$skip_classes)) {
+                    $purged[$i] = $trace;
+                }
+            }
 
-          }
-
-          return $purged;
+            return $purged;
         }
 
         // -- formatting
         public static function toText($var_dump, $var_name, $backtrace, $full_backtrace)
         {
-          return PHP_EOL
-          . "******* "
-          . (empty($var_name) ? $backtrace[1]['function'] . '()' : " ($var_name) ")
-          . " *******"
-          . PHP_EOL
-          . self::tracesToString($backtrace, $full_backtrace)
-          . PHP_EOL
-          . $var_dump;
+            return PHP_EOL
+            . "******* "
+            . (empty($var_name) ? $backtrace[1]['function'] . '()' : " ($var_name) ")
+            . " *******"
+            . PHP_EOL
+            . self::tracesToString($backtrace, $full_backtrace)
+            . PHP_EOL
+            . $var_dump;
         }
 
         public static function toHTML($var_dump, $var_name, $backtrace, $full_backtrace)
         {
-          $css = [
+            $css = [
             'text-align:left',
             'z-index:9999',
             'background-color:#FFF',
@@ -72,13 +73,13 @@ namespace HexMakina\Debugger
             'font-size:0.7em',
             'margin:0 0 1em 0',
             'font-family:courier'
-          ];
+            ];
 
-          return sprintf(
-            '<pre style="%s">%s</pre>',
-            implode(';', $css),
-            self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
-          );
+            return sprintf(
+                '<pre style="%s">%s</pre>',
+                implode(';', $css),
+                self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
+            );
         }
         // -- formatting : first line of \Throwable-based error
         public static function formatThrowable(\Throwable $err)
@@ -183,7 +184,6 @@ namespace HexMakina\Debugger
         {
             return in_array($function_name, ['vd', 'dd','vdt', 'ddt']);
         }
-
     }
 }
 namespace
