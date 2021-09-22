@@ -135,11 +135,11 @@ namespace HexMakina\Debugger
                 $args = self::traceArgsToString($trace['args'] ?? []);
             }
 
-            $call_file = isset($trace['file']) ? basename($trace['file']) : '?';
+            $call_file = isset($trace['file']) ? self::formatFilename($trace['file'], 2) : '?';
             $call_line = $trace['line'] ?? '?';
 
             return sprintf(
-                '[%-23.23s %3s]  %s%s(%s)',
+                '[%-33.33s %3s]  %s%s(%s)',
                 $call_file,
                 $call_line,
                 "$class_name::",
