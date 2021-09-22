@@ -18,16 +18,35 @@ namespace HexMakina\Debugger
         // return the var itself, for easy code debugging
         public static function visualDump($var, $var_name = null, $full_backtrace = false)
         {
-            $dump = self::dump($var);
-            $traces = $var instanceof \Throwable ? $var->getTrace() : debug_backtrace();
-            $traces = self::purgeTraces($traces);
 
+            if ($var instanceof \Throwable) {
+                $traces = $var->getTrace();
+                $dump = self::formatExceptionAsTrace($var);
+            } else {
+                $traces = debug_backtrace();
+
+                ob_start();
+                var_dump($var);
+                $dump = ob_get_clean();
+            }
+
+            $traces = self::purgeTraces($traces);
             $message = self::toHTML($dump, $var_name, $traces, $full_backtrace);
 
             self::displayErrors($message);
             return $var;
         }
 
+        private static function formatExceptionAsTrace($var)
+        {
+            return self::traceToString([
+              'class' => get_class($var),
+              'line' => $var->getLine(),
+              'file' => $var->getFile(),
+              'function' => 'getCode',
+              'args' => [$var->getCode()]
+            ]) . PHP_EOL . $var->getMessage();
+        }
         // should we display something ?
         public static function displayErrors($error_message = null)
         {
@@ -81,18 +100,6 @@ namespace HexMakina\Debugger
                 self::toText($var_dump, $var_name, $backtrace, $full_backtrace)
             );
         }
-        // -- formatting : first line of \Throwable-based error
-        public static function formatThrowable(\Throwable $err)
-        {
-            return sprintf(
-                '%s (%d) in file %s:%d' . PHP_EOL . '%s',
-                get_class($err),
-                $err->getCode(),
-                self::formatFilename($err->getFile()),
-                $err->getLine(),
-                $err->getMessage()
-            );
-        }
 
         // reduce_file_depth_to allows for short filepath, cause it gets crazy sometimes
         private static function formatFilename($file, $reduce_file_depth_to = 5)
@@ -115,18 +122,6 @@ namespace HexMakina\Debugger
             }
 
             return implode(PHP_EOL, array_reverse($formated_traces));
-        }
-
-        // creates a dump according to variable type (Throwables & anything else)
-        private static function dump($var): string
-        {
-            if ($var instanceof \Throwable) {
-                return self::formatThrowable($var);
-            }
-
-            ob_start();
-            var_dump($var);
-            return ob_get_clean();
         }
 
         private static function traceToString($trace)
