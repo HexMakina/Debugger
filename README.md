@@ -8,30 +8,29 @@
 <img src="https://img.shields.io/badge/PSR-12-brightgreen" alt="PSR-12 Compliant" />
 <img src="https://img.shields.io/badge/PHP-7.0-brightgreen" alt="PHP 7.0 Required" />
 
-wrapper for var_dump, with an optional stack trace but mandatory nice looks
+wrapper for var_dump, optional full stack trace, mandatory good looks
 - it tells you were the call was initiated so you don't ever have to look for a forgotten var_dump()
-- it shows you the trace of calls that lead to the dump()
+- it shows you the trace of calls that lead to the dump
 - for each trace, it presents you with the filename, the class name and the function with params
 
 no more wondering how a bug came into being.
 
 
 ## Usage
-Instantiate Debugger; to load the class
+Instantiate Debugger; to load the class and shortcuts
 ```
 new \HexMakina\Debugger\Debugger();
 ```
 
 Debugger class file has 2 namespaces, the debugger itself in HexMakina\Debugger, and in the root namespace, 4 shortcuts:
-
 ```
-vd($var, $label); // nice var_dump
-dd($var, $label); // nice var_dump AND die
-vdt($var, $label); // nice var_dump with a stack trace
-ddt($var, $label); // nice var dump with a stack trace AND die
+vd($var, $label);  // visual dump
+dd($var, $label);  // visual dump AND die();
+vdt($var, $label); // visual dump with full trace
+ddt($var, $label); // visual dump with full trace AND die();
 ```
 
-For instance, in bootstrap.php, where the variable $foo is a string with a value of 'bar', the output of ```vd($foo);``` would be:
+For instance, dumping the variable $foo, in file bootstrap.php, line 16, the output of ```vd($foo);``` would be:
 ```
 **************
 [bootstrap.php            16]       ?::vd(1627941733.4195)
@@ -50,12 +49,12 @@ but ```vdt($foo);``` would be:
 **************
 [index.php                 2]          ?::require(/var/www/dev.engine/koral/lareponse/koral/bootstrap.php)
 [bootstrap.php            16]       ?::vdt(1627941924.2403)
-string(4) "test"
+string(4) "bar"
 ```
 We now see the whole path the program took before reaching the debugging command
 
 
-If we went deeper into the code, the output of ```vdt($foo, 'inspecting foo');``` in a sub-sub-sub-sub-.. routine, would be the following:
+Deeper into the code, in a sub-sub-sub-sub-.. routine, the output of ```vdt($foo, 'inspecting foo');``` would be:
 ```
 ******* (inspecting) *******
 [index.php                35]  HexMakina\koral\Controllers\Home::bootstrap()
@@ -67,7 +66,7 @@ If we went deeper into the code, the output of ```vdt($foo, 'inspecting foo');``
 [TightModelSelector.php   20]  HexMakina\TightORM\TableModel::table()
 [TableModel.php           61]  HexMakina\Crudites\Crudites::inspect(worker)
 [Crudites.php             31]  ::vdt(1631261380.9958)
-string(6) "worker"
+string(6) "bar"
 ```
 
-Easy debugging & nice formatting, that's Debugger for you.
+Easy debugging & old-school formatting, that's Debugger for you.
