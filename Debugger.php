@@ -112,7 +112,7 @@ namespace HexMakina\Debugger
         {
             $formated_traces = [];
 
-            foreach ($traces as $depth => $trace) {
+            foreach ($traces as $trace) {
                 $formated_traces [] = self::traceToString($trace);
                 if ($full_backtrace === false) {
                     break;
