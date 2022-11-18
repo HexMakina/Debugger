@@ -31,7 +31,13 @@ namespace HexMakina\Debugger
                 $dump = ob_get_clean();
             }
 
-            $traces = self::purgeTraces($traces);
+            // purge traces
+            $traces = array_filter(
+                $traces,
+                static fn($trace): bool
+                => empty($trace['class']) || !in_array($trace['class'], self::$skip_classes)
+            );
+
             $message = self::toHTML($dump, $var_name, $traces, $full_backtrace);
 
             self::displayErrors($message);
@@ -59,14 +65,6 @@ namespace HexMakina\Debugger
                 return;
             }
             echo $error_message;
-        }
-
-        /**
-         * @return array<int|string, mixed>
-         */
-        private static function purgeTraces($traces): array
-        {
-            return array_filter($traces, static fn($trace): bool => empty($traces[$i]['class']) || !in_array($traces[$i]['class'], self::$skip_classes));
         }
 
         // -- formatting
@@ -182,7 +180,6 @@ namespace HexMakina\Debugger
         }
     }
 }
-
 namespace
 {
     use HexMakina\Debugger\Debugger;
