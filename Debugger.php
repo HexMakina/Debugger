@@ -4,13 +4,14 @@ namespace HexMakina\Debugger
 {
     class Debugger
     {
-        private static $skip_classes = [__CLASS__];
+        private static array $skip_classes = [__CLASS__];
 
-        public function setSkipClasses($skip_classes)
+        public function setSkipClasses($skip_classes): void
         {
-            foreach ($skip_classes as $class) {
-                array_push(self::$skip_classes, $class);
+            foreach ($skip_classes as $skip_class) {
+                self::$skip_classes[] = $skip_class;
             }
+
             self::$skip_classes = array_unique(self::$skip_classes);
         }
 
@@ -37,7 +38,7 @@ namespace HexMakina\Debugger
             return $var;
         }
 
-        private static function formatExceptionAsTrace($var)
+        private static function formatExceptionAsTrace($var): string
         {
             return self::traceToString([
               'class' => get_class($var),
@@ -47,33 +48,33 @@ namespace HexMakina\Debugger
               'args' => [$var->getCode()]
             ]) . PHP_EOL . $var->getMessage();
         }
+
         // should we display something ?
-        public static function displayErrors($error_message = null)
+        public static function displayErrors($error_message = null): void
         {
-            if (!empty($error_message) && ini_get('display_errors') == '1') {
-                echo $error_message;
+            if (empty($error_message)) {
+                return;
             }
+            if (ini_get('display_errors') != '1') {
+                return;
+            }
+            echo $error_message;
         }
 
-        private static function purgeTraces($traces)
+        /**
+         * @return array<int|string, mixed>
+         */
+        private static function purgeTraces($traces): array
         {
-            $purged = [];
-          // removes all internal calls
-            foreach ($traces as $i => $trace) {
-                if (empty($traces[$i]['class']) || !in_array($traces[$i]['class'], self::$skip_classes)) {
-                    $purged[$i] = $trace;
-                }
-            }
-
-            return $purged;
+            return array_filter($traces, static fn($trace): bool => empty($traces[$i]['class']) || !in_array($traces[$i]['class'], self::$skip_classes));
         }
 
         // -- formatting
-        public static function toText($var_dump, $var_name, $backtrace, $full_backtrace)
+        public static function toText($var_dump, $var_name, $backtrace, $full_backtrace): string
         {
             return PHP_EOL
             . "******* "
-            . (empty($var_name) ? $backtrace[1]['function'] . '()' : " ($var_name) ")
+            . (empty($var_name) ? $backtrace[1]['function'] . '()' : sprintf(' (%s) ', $var_name))
             . " *******"
             . PHP_EOL
             . self::tracesToString($backtrace, $full_backtrace)
@@ -81,7 +82,7 @@ namespace HexMakina\Debugger
             . $var_dump;
         }
 
-        public static function toHTML($var_dump, $var_name, $backtrace, $full_backtrace)
+        public static function toHTML($var_dump, $var_name, $backtrace, $full_backtrace): string
         {
             $css = [
             'text-align:left',
@@ -102,13 +103,13 @@ namespace HexMakina\Debugger
         }
 
         // reduce_file_depth_to allows for short filepath, cause it gets crazy sometimes
-        private static function formatFilename($file, $reduce_file_depth_to = 5)
+        private static function formatFilename($file, $reduce_file_depth_to = 5): string
         {
             return implode('/', array_slice(explode('/', $file), -$reduce_file_depth_to, $reduce_file_depth_to));
         }
 
         // -- formatting : nice backtrace
-        private static function tracesToString($traces, $full_backtrace)
+        private static function tracesToString($traces, $full_backtrace): string
         {
             $formated_traces = [];
 
@@ -122,7 +123,7 @@ namespace HexMakina\Debugger
             return implode(PHP_EOL, array_reverse($formated_traces));
         }
 
-        private static function traceToString($trace)
+        private static function traceToString($trace): string
         {
             $function_name = $trace['function'] ?? '?';
             $class_name = $trace['class'] ?? '';
@@ -140,18 +141,19 @@ namespace HexMakina\Debugger
                 '[%-33.33s %3s]  %s%s(%s)',
                 $call_file,
                 $call_line,
-                "$class_name::",
+                sprintf('%s::', $class_name),
                 $function_name,
                 $args
             );
         }
 
-        private static function traceArgsToString($trace_args)
+        private static function traceArgsToString($trace_args): string
         {
             $ret = [];
-            foreach ($trace_args as $arg) {
-                $ret[] = self::traceArgToString($arg);
+            foreach ($trace_args as $trace_arg) {
+                $ret[] = self::traceArgToString($trace_arg);
             }
+
             return implode(', ', $ret);
         }
 
@@ -170,6 +172,7 @@ namespace HexMakina\Debugger
             } elseif (is_array($arg)) {
                 $ret = 'Array #' . count($arg);
             }
+
             return $ret;
         }
 
@@ -179,31 +182,35 @@ namespace HexMakina\Debugger
         }
     }
 }
+
 namespace
 {
     use HexMakina\Debugger\Debugger;
 
     if (!function_exists('vd')) {
-        function vd($var, $var_name = null)
+        function vd($var, $var_name = null): void
         {
             Debugger::visualDump($var, $var_name, false);
         }
     }
+
     if (!function_exists('dd')) {
-        function dd($var, $var_name = null)
+        function dd($var, $var_name = null): void
         {
             Debugger::visualDump($var, $var_name, false);
             die;
         }
     }
+
     if (!function_exists('vdt')) {
-        function vdt($var, $var_name = null)
+        function vdt($var, $var_name = null): void
         {
             Debugger::visualDump($var, $var_name, true);
         }
     }
+
     if (!function_exists('ddt')) {
-        function ddt($var, $var_name = null)
+        function ddt($var, $var_name = null): void
         {
             Debugger::visualDump($var, $var_name, true);
             die;
