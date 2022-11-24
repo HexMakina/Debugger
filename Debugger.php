@@ -6,12 +6,9 @@ namespace HexMakina\Debugger
     {
         private static array $skip_classes = [__CLASS__];
 
-        public function setSkipClasses($skip_classes): void
+        public function addSkipClasses($skip_classes): void
         {
-            foreach ($skip_classes as $skip_class) {
-                self::$skip_classes[] = $skip_class;
-            }
-
+            self::$skip_classes = array_merge(self::$skip_classes, $skip_classes);
             self::$skip_classes = array_unique(self::$skip_classes);
         }
 
@@ -19,7 +16,6 @@ namespace HexMakina\Debugger
         // return the var itself, for easy code debugging
         public static function visualDump($var, $var_name = null, $full_backtrace = false)
         {
-
             if ($var instanceof \Throwable) {
                 $traces = $var->getTrace();
                 $dump = self::formatExceptionAsTrace($var);
@@ -30,8 +26,7 @@ namespace HexMakina\Debugger
                 var_dump($var);
                 $dump = ob_get_clean();
             }
-
-            // purge traces
+            // purge traces from skipped classes
             $traces = array_filter(
                 $traces,
                 static fn($trace): bool
@@ -39,7 +34,6 @@ namespace HexMakina\Debugger
             );
 
             $message = self::toHTML($dump, $var_name, $traces, $full_backtrace);
-
             self::displayErrors($message);
             return $var;
         }
@@ -56,14 +50,16 @@ namespace HexMakina\Debugger
         }
 
         // should we display something ?
-        public static function displayErrors($error_message = null): void
+        public static function displayErrors($error_message): void
         {
             if (empty($error_message)) {
                 return;
             }
+
             if (ini_get('display_errors') != '1') {
                 return;
             }
+
             echo $error_message;
         }
 
@@ -72,7 +68,7 @@ namespace HexMakina\Debugger
         {
             return PHP_EOL
             . "******* "
-            . (empty($var_name) ? $backtrace[1]['function'] . '()' : sprintf(' (%s) ', $var_name))
+            . (empty($var_name) ? ($backtrace[1]['function'] ?? '?') . '()' : sprintf(' (%s) ', $var_name))
             . " *******"
             . PHP_EOL
             . self::tracesToString($backtrace, $full_backtrace)
@@ -180,6 +176,7 @@ namespace HexMakina\Debugger
         }
     }
 }
+
 namespace
 {
     use HexMakina\Debugger\Debugger;
