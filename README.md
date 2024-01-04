@@ -64,7 +64,6 @@ Deeper into the code, in a sub-sub-sub-sub-.. routine, the output of ```vdt($foo
 [Worker.php               78]  HexMakina\TightORM\TightModel::query_retrieve(Array #0, Array #0)
 [TightModel.php          160]  HexMakina\TightORM\TightModelSelector::__construct(HexMakina\koral\Models\Worker)
 [TightModelSelector.php   20]  HexMakina\TightORM\TableModel::table()
-[TableModel.php           61]  HexMakina\Crudites\Crudites::inspect(worker)
 [Crudites.php             31]  ::vdt(1631261380.9958)
 string(6) "bar"
 ```
