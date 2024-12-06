@@ -155,7 +155,7 @@ namespace HexMakina\Debugger
         {
             $ret = 'unknown type';
 
-            if (is_null($arg)) {
+            if ($arg === null) {
                 $ret = 'NULL';
             } elseif (is_bool($arg)) {
                 $ret = 'bool:' . ((int)$arg);
