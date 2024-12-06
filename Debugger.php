@@ -158,13 +158,13 @@ namespace HexMakina\Debugger
             if ($arg === null) {
                 $ret = 'NULL';
             } elseif (is_bool($arg)) {
-                $ret = 'bool:' . ((int)$arg);
+                $ret = '[bool]' . ((int)$arg);
             } elseif (is_scalar($arg)) {
-                $ret = $arg;
+                $ret = '[scalar]'.$arg;
             } elseif (is_object($arg)) {
                 $ret = get_class($arg);
             } elseif (is_array($arg)) {
-                $ret = 'Array #' . count($arg);
+                $ret = 'Array #'.($count = count($arg)).($count>0 ? ' json:'.json_encode(array_keys($arg)) : '');
             }
 
             return $ret;

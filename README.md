@@ -60,11 +60,10 @@ Deeper into the code, in a sub-sub-sub-sub-.. routine, the output of ```vdt($foo
 [index.php                35]  HexMakina\koral\Controllers\Home::bootstrap()
 [Home.php                 28]  App\Controllers\Home::common_viewport(HexMakina\kadro\Controllers\Reception)
 [Home.php                 18]  HexMakina\TightORM\TableModel::filter()
-[TableModel.php          184]  HexMakina\koral\Models\Worker::query_retrieve(Array #0, Array #0)
-[Worker.php               78]  HexMakina\TightORM\TightModel::query_retrieve(Array #0, Array #0)
+[TableModel.php          184]  HexMakina\koral\Models\Worker::filter(Array #0, Array #0)
+[Worker.php               78]  HexMakina\TightORM\TightModel::filter(Array #0, Array #0)
 [TightModel.php          160]  HexMakina\TightORM\TightModelSelector::__construct(HexMakina\koral\Models\Worker)
 [TightModelSelector.php   20]  HexMakina\TightORM\TableModel::table()
-[TableModel.php           61]  HexMakina\Crudites\Crudites::inspect(worker)
 [Crudites.php             31]  ::vdt(1631261380.9958)
 string(6) "bar"
 ```
