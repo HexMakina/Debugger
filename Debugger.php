@@ -151,24 +151,30 @@ namespace HexMakina\Debugger
             return implode(', ', $ret);
         }
 
-        private static function traceArgToString($arg)
+        private static function traceArgToString($arg): string
         {
-            $ret = 'unknown type';
+            switch (true) {
+                case is_null($arg):
+                    return 'NULL';
 
-            if ($arg === null) {
-                $ret = 'NULL';
-            } elseif (is_bool($arg)) {
-                $ret = '[bool]' . ((int)$arg);
-            } elseif (is_scalar($arg)) {
-                $ret = '[scalar]'.$arg;
-            } elseif (is_object($arg)) {
-                $ret = get_class($arg);
-            } elseif (is_array($arg)) {
-                $ret = 'Array #'.($count = count($arg)).($count>0 ? ' json:'.json_encode(array_keys($arg)) : '');
+                case is_bool($arg):
+                    return '[bool]' . (int) $arg;
+
+                case is_scalar($arg):
+                    return '[scalar]' . $arg;
+
+                case is_object($arg):
+                    return get_class($arg);
+
+                case is_array($arg):
+                    $count = count($arg);
+                    return 'Array #' . $count . ($count > 0 ? ' json:' . json_encode(array_keys($arg)) : '');
+
+                default:
+                    return 'unknown type';
             }
-
-            return $ret;
         }
+
 
         private static function isShortcutCall($function_name): bool
         {
